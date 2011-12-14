@@ -1,0 +1,19 @@
+%html
+  %head
+    %title #{settings.appname.capitalize}
+    %link(rel="stylesheet" href="/css/#{settings.appname}.css")
+
+%body
+  #page
+    #header
+      %h4 #{settings.appname.upcase}
+    #nav
+      %a{:title => "Home", :href => "/"} Home
+      |
+      %a{:title => "Nagios", :href => "/nagios"} Nagios
+
+    #content
+      = yield
+
+  #copyright
+    %p Powered by #{settings.appname.capitalize} v0.0.3.

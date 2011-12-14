@@ -1,0 +1,25 @@
+#showbox
+  %h1 #{@host_name}
+  %table.table
+    %thead
+      %th.th Attribute
+      %th.th Value
+    %tbody
+      -@hosts.each do |host|
+        -host.keys.sort.each do |attr|
+          -case attr
+            -when "services"
+              %tr
+                %td.td= attr
+                %td.td
+                  -host[attr].split(',').each do |service|
+                    %a{:title => "#{service}", :href => "/hosts/#{host['name']}/#{service}/attributes"} #{service}
+            -when "host_name"
+              %tr
+                %td.td= attr
+                %td.td
+                  %a{:title => "#{host['host_name']}", :href => "/hosts/#{host['host_name']}/attributes"} #{host['host_name']}
+            -else
+              %tr
+                %td.td= attr
+                %td.td= host[attr]

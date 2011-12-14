@@ -1,0 +1,11 @@
+#formbox
+  %form{ :action => "/hosts", :method => "get"}
+    %fieldset
+      %legend Enter hostname or hostname/service.
+      #form_row
+        %label{:for => "host_name"} Hostname:
+        %input{:type => "text", :name => "host_name", :class => "text"}
+        %label{:for => "service_description"} Service:
+        %input{:type => "text", :name => "service_description", :class => "text"} (optional)
+      #form_row
+        %input{:type => "submit", :value => "Fetch!", :class => "button"}

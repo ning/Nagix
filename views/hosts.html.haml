@@ -1,0 +1,20 @@
+%html
+  %head
+    %title Nagilista: Hosts
+    %link(rel="stylesheet" href="/css/nagix.css")
+
+%body
+  %h1 Hosts
+
+  %table.table
+    %tr
+      %thead
+        %th.th Host
+        %th.th Attributes
+      %tbody
+        -@hosts.each do |host|
+          %tr
+            %td= host['name']
+
+  #copyright
+    %p Powered by Nagiolista v0.0.3.

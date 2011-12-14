@@ -1,0 +1,12 @@
+#showbox
+  %table.table
+    %thead
+      %tr
+        %th.th Attribute
+        %th.th Value
+    %tbody
+      -@items.each do |item|
+        -item.keys.sort.each do |attr|
+          %tr
+            %td.td= attr
+            %td.td= item[attr]
