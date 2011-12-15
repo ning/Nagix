@@ -12,7 +12,7 @@ begin
     gem.authors = ["Gerardo López-Fernádez"]
     gem.license = 'ASL2'
     gem.required_ruby_version = '>= 1.8.7'
-    gem.files = FileList['lib/**/*.rb', 'bin/*', 'public/**/*', 'views/**/*', '[A-Z]*'].to_a
+    gem.files = FileList['lib/**/*.rb', 'bin/*', 'config.ru', 'public/**/*', 'views/**/*', '[A-Z]*'].to_a
     gem.add_development_dependency 'yard', '~> 0.6.1'
     gem.add_dependency 'sinatra', '>= 1.2.3'
     gem.add_dependency 'sinatra-respond_to', '>= 0.7.0'

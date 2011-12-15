@@ -12,6 +12,7 @@ module Nagix
     class LQLError < Error; end
 
     def initialize(params)
+      Log4r.define_levels "DEBUG", "INFO", "WARN", "ERROR"
       log_file = params[:log_file] || "nagix.lql.log"
       log_level = params[:log_level] || Log4r::WARN
       @lqlpath = params[:socket]

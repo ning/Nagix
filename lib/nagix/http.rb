@@ -27,6 +27,10 @@ module Nagix
         }.parse!(ARGV.dup)
       end
 
+      set :mklivestatus_socket, nil
+      set :mklivestatus_log_file, nil
+      set :mklivestatus_log_level, nil
+
       if config_file
         config = YAML.load_file(config_file)
       else
@@ -41,7 +45,7 @@ module Nagix
 
       if config
         @config = config.to_hash.each do |k,v|
-          set k, v
+          set k.to_sym, v
         end
       else
         @config = {}
