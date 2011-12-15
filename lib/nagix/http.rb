@@ -126,8 +126,29 @@ module Nagix
       end
     end
 
+
+
+
+
+
+
+
+
+
+
+
+
     get %r{/hosts/([a-zA-Z0-9\.]+)/([a-zA-Z0-9\.\/:_-]+)/command/([A-Z_]+)} do |host_name,service_description,napixcmd|
-      NagiosXcmd.docurl(napixcmd) ? redirect("#{NagiosXcmd.docurl(napixcmd)}",307) : halt(404, "Nagios External Command #{napixcmd} Not Found")
+      @host_name = host_name
+      @service_description = service_description
+      @napixcmd = napixcmd
+      @napicxmd_params =  {}
+      haml :napixcmd
+#      NagiosXcmd.docurl(napixcmd) ? redirect("#{NagiosXcmd.docurl(napixcmd)}",307) : halt(404, "Nagios External Command #{napixcmd} Not Found")
+    end
+
+    post %r{/hosts/([a-zA-Z0-9\.]+)/([a-zA-Z0-9\.\/:_-]+)/command/([A-Z_]+)} do |host_name,service_description,napixcmd|
+
     end
 
     put %r{/hosts/([a-zA-Z0-9\.]+)/([a-zA-Z0-9\.\/:_-]+)/command/([A-Z_]+)} do |host_name,service_description,napixcmd|
