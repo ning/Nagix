@@ -1,12 +1,3 @@
-#!/usr/bin/env rackup
+#!/usr/bin/env sh
 
-lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
-$LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
-
-require 'nagix'
-require 'nagix/http'
-
-run Nagix::App
-
-#require File.dirname(__FILE__) + "/nagix"
-#run Nagix::App
+rackup config.ru
