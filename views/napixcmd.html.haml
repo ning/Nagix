@@ -1,0 +1,11 @@
+#content
+  %p #{@host_name}
+  %p #{@service_description}
+  %p #{@napixcmd}
+
+#formbox
+  %form{ :action => "/hosts/#{@host_name}/#{@service_description}/command/#{@napixcmd}", :method => "put"}
+    %fieldset
+      %legend Enter required fields.
+      #form_row
+        %input{:type => "submit", :value => "Fetch!", :class => "button"}

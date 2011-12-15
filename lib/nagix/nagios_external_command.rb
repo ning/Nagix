@@ -3,7 +3,7 @@ module Nagix
   class NagiosXcmd
 
     NAGIOSXCMDS = {
-      :DISABLE_NOTIFICATIONS =>                     { :signature => "" , :command_id => 7 },
+      :DISABLE_NOTIFICATIONS =>                     { :signature => "", :command_id => 7 },
       :ENABLE_NOTIFICATIONS =>                      { :signature => "", :command_id => 8 },
       :DISABLE_SVC_NOTIFICATIONS =>                 { :signature => "host_name;service_description", :command_id => 12 },
       :ENABLE_SVC_NOTIFICATIONS =>                  { :signature => "host_name;service_description", :command_id => 11 },
@@ -12,8 +12,9 @@ module Nagix
       :DISABLE_SERVICEGROUP_SVC_NOTIFICATIONS =>    { :signature => "servicegroup", :command_id => 92 },
       :ENABLE_SERVICEGROUP_SVC_NOTIFICATIONS =>     { :signature => "servicegroup", :command_id => 91 },
       :ENABLE_HOSTGROUP_HOST_NOTIFICATIONS =>       { :signature => "hostgroup", :command_id => 81 },
-      :ACKNOWLEDGE_HOST_PROBLEM =>                  { :signature => "<host_name>;<sticky>;<notify>;<persistent>;<author>;<comment>", :command_id => 39 },
-      :ACKNOWLEDGE_SVC_PROBLEM =>                   { :signature => "<host_name>;<service_description>;<sticky>;<notify>;<persistent>;<author>;<comment>", :command_id => 40 }
+      :ACKNOWLEDGE_HOST_PROBLEM =>                  { :signature => "host_name>;sticky;notify;persistent;author;comment", :command_id => 39 },
+      :ACKNOWLEDGE_SVC_PROBLEM =>                   { :signature => "host_name>;service_description;sticky;notify;persistent;author;comment", :command_id => 40 },
+      :PROCESS_SERVICE_CHECK_RESULT =>              { :signature => "host_name;service_description;return_code;plugin_output", :command_id => 114 }
     }
 
     def self.docurl(napixcmd)
@@ -33,10 +34,6 @@ module Nagix
           @cmd += ";#{params[p.to_sym]}"
         end
       end
-    end
-
-    def to_s
-      @cmd
     end
 
   end
