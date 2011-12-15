@@ -11,10 +11,16 @@ module Nagix
     class Error < StandardError; end
     class LQLError < Error; end
 
-    def initialize(socketpath)
-      @lqlpath = socketpath
+    def initialize(params)
+      log_file = params[:log_file] || "nagix.lql.log"
+      log_level = params[:log_level] || Log4r::WARN
+      @lqlpath = params[:socket]
       @log = Log4r::Logger.new('lql')
-      @log.add Log4r::FileOutputter.new("logfile", :filename => "/tmp/nagix.lql.log", :trunc => false, :formatter => Log4r::PatternFormatter.new(:pattern => "[%d] %c [%p] %l %m"), :level => Log4r::DEBUG)
+      @log.add Log4r::FileOutputter.new("logfile",
+                                        :filename => log_file,
+                                        :trunc => false,
+                                        :formatter => Log4r::PatternFormatter.new(:pattern => "[%d] %c [%p] %l %m"),
+                                        :level => log_level)
     end
 
     def self.connect(socketpath)
