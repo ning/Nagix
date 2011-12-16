@@ -12,11 +12,11 @@ module Nagix
     class LQLError < Error; end
 
     def initialize(params)
-      Log4r.define_levels "DEBUG", "INFO", "WARN", "ERROR"
-      log_file = params[:log_file] || "nagix.lql.log"
-      log_level = params[:log_level] || Log4r::WARN
+      # need to create the logger first so it initializes the log levels
       @lqlpath = params[:socket]
       @log = Log4r::Logger.new('lql')
+      log_file = params[:log_file] || "nagix.lql.log"
+      log_level = Log4r.const_get(params[:log_level] || "WARN")
       @log.add Log4r::FileOutputter.new("logfile",
                                         :filename => log_file,
                                         :trunc => false,
