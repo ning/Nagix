@@ -1,3 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-rackup config.ru
+DIR="$( cd -P "$( dirname "$0" )" && pwd )"
+rackup "$@" "$DIR/../config.ru"
