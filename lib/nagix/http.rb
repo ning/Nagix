@@ -16,7 +16,7 @@ module Nagix
     register Sinatra::RespondTo
 
     set :app_file, __FILE__
-    set :root, File.expand_path("../..", __FILE__)
+    set :root, File.expand_path("../..", File.dirname(__FILE__))
 
     configure do
       config_file = nil
