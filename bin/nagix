@@ -1,12 +1,13 @@
-#!/usr/bin/env rackup
+#!/usr/bin/env ruby
 
-lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
-$LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
+bin_dir = File.expand_path(File.dirname(__FILE__))
+lib_dir = File.expand_path("../lib", File.dirname(__FILE__))
+$LOAD_PATH.unshift(bin_dir) if File.directory?(bin_dir) && !$LOAD_PATH.include?(bin_dir)
+$LOAD_PATH.unshift(lib_dir) if File.directory?(lib_dir) && !$LOAD_PATH.include?(lib_dir)
 
+require 'rubygems'
 require 'nagix'
 require 'nagix/http'
+require "rack"
 
-run Nagix::App
-
-#require File.dirname(__FILE__) + "/nagix"
-#run Nagix::App
+Rack::Server.start :app => Nagix::App, :Port => 8080

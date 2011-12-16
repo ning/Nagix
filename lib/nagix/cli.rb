@@ -154,7 +154,9 @@ module Nagix
       end
 
       def pid
-        @lql = Nagix::MKLivestatus.new(settings.mklivestatus_socket)
+        @lql = Nagix::MKLivestatus.new(:socket => settings.mklivestatus_socket,
+                                       :log_file => settings.mklivestatus_log_file,
+                                       :log_level => settings.mklivestatus_log_level)
         @lql.find(:status, :column => "nagios_pid")
       end
 
