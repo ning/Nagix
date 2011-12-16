@@ -13,15 +13,42 @@ module Nagix
 
   class App < Sinatra::Base
 
-    App.register Sinatra::RespondTo
+    register Sinatra::RespondTo
 
     set :app_file, __FILE__
-    set :root, "/usr/local/ruby/ruby-1.8.7-p330/lib/ruby/gems/1.8/gems/nagix-#{VERSION}"
+    set :root, File.expand_path("../..", File.dirname(__FILE__))
 
     configure do
+      config_file = nil
+      if ARGV.any?
+        require 'optparse'
+        OptionParser.new { |op|
+          op.on('-c path') { |val| config_file = val }
+        }.parse!(ARGV.dup)
+      end
 
-      @config = YAML::load(File.read('/local/home/nagios/etc/config.yml')).to_hash.each do |k,v|
-        set k, v
+      set :mklivestatus_socket, nil
+      set :mklivestatus_log_file, nil
+      set :mklivestatus_log_level, nil
+
+      if config_file
+        config = YAML.load_file(config_file)
+      else
+        if File.exist?(".nagixrc")
+          config = YAML.load_file(".nagixrc")
+        elsif File.exists?("#{ENV['HOME']}/.nagixrc")
+          config = YAML.load_file("#{ENV['HOME']}/.nagixrc")
+        elsif File.exists?("/etc/nagixrc")
+          config = YAML.load_file("etc/nagixrc")
+        end
+      end
+
+      if config
+        @config = config.to_hash.each do |k,v|
+          set k.to_sym, v
+        end
+      else
+        @config = {}
       end
 
       set :appname, "nagix"
@@ -48,7 +75,9 @@ module Nagix
       @columns = "Columns: " + @qsparams['attribute'].join(' ') + "\n" if @qsparams['attribute'].kind_of?(Array)
       @columns = "Columns: " + @qsparams['attribute'] + "\n" if @qsparams['attribute'].kind_of?(String)
 
-      @lql = Nagix::MKLivestatus.new(settings.mklivestatus_socket)
+      @lql = Nagix::MKLivestatus.new(:socket => settings.mklivestatus_socket,
+                                     :log_file => settings.mklivestatus_log_file,
+                                     :log_level => settings.mklivestatus_log_level)
     end
 
     get '/' do
@@ -156,8 +185,7 @@ module Nagix
       end
     end
 
-    run!
+    run! if $0 == __FILE__
 
   end
-
 end
