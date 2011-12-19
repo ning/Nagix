@@ -16,7 +16,8 @@ module Nagix
           case attribute
             when "services"
               attributes[attribute].split(',').each do |s|
-                n_service = MKLivestatus.new("/local/var/run/nagios/rw/nagios.lql").find(:services, :filter => "servicedescription=#{s}")
+                # TODO: make configurable
+                n_service = MKLivestatus.new("/local/var/run/nagios/rw/nagios.lql").query("SELECT * FROM services WHERE servicedescription = '#{s}'")
                 @services.push(n_service) if n_service
               end
             end

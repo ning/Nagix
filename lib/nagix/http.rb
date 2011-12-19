@@ -85,7 +85,7 @@ module Nagix
     end
 
     get '/hosts/?' do
-      @hosts = @lql.find(:hosts, :column => "host_name name" )
+      @hosts = @lql.query("SELECT host_name name FROM hosts")
       respond_to do |wants|
         wants.html { @hosts.nil? ? not_found : haml(:hosts) }
         wants.json { @hosts.to_json }
@@ -99,7 +99,7 @@ module Nagix
         redirect "/hosts/#{params[:host_name]}/#{params[:service_description]}/attributes"
       end
 
-      @hosts = @lql.find("hosts",@filter,@columns)
+      @hosts = @lql.query("hosts",@filter,@columns)
       respond_to do |wants|
         wants.html { @hosts == nil ? not_found : haml(:hosts) }
         wants.json { @hosts.to_json }
@@ -108,7 +108,7 @@ module Nagix
 
     get '/hosts/:host_name/attributes' do
       @host_name = params[:host_name]
-      @hosts = @lql.find(:hosts, :filter => [ "host_name = #{@host_name}", "alias = #{@host_name}", "address = #{@host_name}", "Or: 3"])
+      @hosts = @lql.query("SELECT * FROM hosts WHERE host_name = '#{@host_name}' OR alias = '#{@host_name}' OR address = '#{@host_name}'")
       respond_to do |wants|
         wants.html { @hosts == nil or @hosts.length == 0 ? halt(404, "Host not found") : haml(:host) }
         wants.json { @hosts.to_json }
@@ -116,10 +116,8 @@ module Nagix
     end
 
     get %r{/hosts/([a-zA-Z0-9\.]+)/([a-zA-Z0-9\.\/:_-]+)/attributes} do |host_name,service_description|
-
-      h = @lql.find(:hosts,:filter => [ "host_name = #{host_name}", "alias = #{host_name}", "address = #{host_name}", "Or: 3"], :column => "name")
-
-      @hosts = @lql.find(:services,:filter => [ "host_name = #{h[0]['name']}", "description = #{service_description}" ])
+      h = @lql.query("SELECT name FROM hosts WHERE host_name = '#{host_name}' OR alias = '#{host_name}' OR address = '#{host_name}'")
+      @hosts = @lql.query("SELECT * FROM services WHERE host_name = '#{h[0]['name']}' AND description = '#{service_description}'")
       respond_to do |wants|
         wants.html { @hosts == nil ? halt(404, "#{host_name} Host not found") : haml(:host) }
         wants.json { @hosts.to_json }
@@ -166,7 +164,7 @@ module Nagix
     end
 
     get '/nagios' do
-      @items = @lql.find("status")
+      @items = @lql.query("SELECT * FROM status")
       respond_to do |wants|
         wants.html { @items == nil ? not_found : haml(:table) }
         wants.json { @items.to_json }

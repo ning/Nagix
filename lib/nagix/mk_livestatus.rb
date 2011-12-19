@@ -12,8 +12,9 @@ module Nagix
     class LQLError < Error; end
 
     def initialize(params)
-      # need to create the logger first so it initializes the log levels
       @lqlpath = params[:socket]
+      @nql_parser = NQL.new
+      # need to create the logger first so it initializes the log levels
       @log = Log4r::Logger.new('lql')
       log_file = params[:log_file] || "nagix.lql.log"
       log_level = Log4r.const_get(params[:log_level] || "WARN")
@@ -36,32 +37,12 @@ module Nagix
       @lqlsocket.close if @lqlsocket.nil?
     end
 
-    def find(table,lqlargs)
-
+    def query(nql_query)
       @lqlsocket = MKLivestatus.connect(@lqlpath) if @lqlsocket.nil?
 
       result = []
-      result__ = []
 
-      query = "GET #{table.to_s}\nResponseHeader: fixed16\n"
-
-      filter = ""
-      if lqlargs[:filter].nil? then
-        filter = nil
-      else
-        lqlargs[:filter].each do |f|
-          f.match(/^Or:|And:/) ? filter += "#{f}\n" : filter += "Filter: #{f}\n"
-        end
-        filter = nil if filter.size == 0
-      end
-
-      @log.debug "FILTER: \n#{filter}"
-      query += "#{filter}" unless filter.nil?
-
-      column = lqlargs[:column]
-      @log.debug "COLUMN: \n#{column}"
-      query += "Columns: #{column}\nColumnHeaders: on\n" unless column.nil?
-      query += "\n"
+      query = @nql_parser.parse(nql_query) + "\nResponseHeader: fixed16\n"
 
       @log.debug "QUERY: \n#{query}"
 
@@ -78,10 +59,6 @@ module Nagix
           columns = Array.new(__columns)
           values = line.chomp.split(';')
           columns.zip(values) { |k,v| hsh[k] = v }
-          if table == :hosts then
-            @log.debug "#{hsh.class()} #{hsh.inspect()}"
-            result__.push(NagiosObject::Host.new(hsh['name'],hsh))
-          end
           result.push(hsh)
         end
       rescue
