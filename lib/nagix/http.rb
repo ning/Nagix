@@ -126,18 +126,6 @@ module Nagix
       end
     end
 
-
-
-
-
-
-
-
-
-
-
-
-
     get %r{/hosts/([a-zA-Z0-9\.]+)/([a-zA-Z0-9\.\/:_-]+)/command/([A-Z_]+)} do |host_name,service_description,napixcmd|
       @host_name = host_name
       @service_description = service_description

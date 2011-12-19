@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rake'
+require 'rspec/core/rake_task'
 
 begin
   require 'jeweler'
@@ -13,6 +14,7 @@ begin
     gem.license = 'ASL2'
     gem.required_ruby_version = '>= 1.8.7'
     gem.files = FileList['lib/**/*.rb', 'bin/*', 'config.ru', 'public/**/*', 'views/**/*', '[A-Z]*'].to_a
+    gem.add_development_dependency 'rspec', '>= 2.7'
     gem.add_development_dependency 'yard', '~> 0.6.1'
     gem.add_dependency 'sinatra', '>= 1.2.3'
     gem.add_dependency 'sinatra-respond_to', '>= 0.7.0'
@@ -35,3 +37,4 @@ rescue LoadError
   puts "Yard (or a dependency) not available. Install it with: gem install yard"
 end
 
+RSpec::Core::RakeTask.new
