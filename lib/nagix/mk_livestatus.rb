@@ -42,24 +42,28 @@ module Nagix
 
       result = []
 
-      query = @nql_parser.parse(nql_query) + "\nResponseHeader: fixed16\n"
+      query = @nql_parser.parse(nql_query) + "\n"
 
       @log.debug "QUERY: \n#{query}"
 
       begin
         @lqlsocket.puts(query)
         query_result = @lqlsocket.readlines
-        @log.debug "QUERY RESULT:\n#{query_result}\n"
+        if query_result
+          @log.debug "QUERY RESULT:\n#{query_result}\n"
 
-        __header = query_result.shift.chomp
-        __columns = query_result.shift.chomp.split(';')
+          __header = query_result.shift.chomp
+          __columns = query_result.shift.chomp.split(';')
 
-        query_result.each do |line|
-          hsh = {}
-          columns = Array.new(__columns)
-          values = line.chomp.split(';')
-          columns.zip(values) { |k,v| hsh[k] = v }
-          result.push(hsh)
+          query_result.each do |line|
+            hsh = {}
+            columns = Array.new(__columns)
+            values = line.chomp.split(';')
+            columns.zip(values) { |k,v| hsh[k] = v }
+            result.push(hsh)
+          end
+        else
+          @log.debug "NO RESULT\n"
         end
       rescue
         result = nil

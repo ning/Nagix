@@ -44,11 +44,11 @@ module Nagix
 	end
 
 	class NQLTransformer < Parslet::Transform
-  	rule(:str => simple(:str)) { String(str) }
-  	rule(:integer => simple(:integer)) { Integer(integer) }
-  	rule(:float => simple(:float)) { Float(float) }
+		rule(:str => simple(:str)) { String(str) }
+		rule(:integer => simple(:integer)) { Integer(integer) }
+		rule(:float => simple(:float)) { Float(float) }
 
-  	rule(:column => simple(:column)) { String(column) }
+		rule(:column => simple(:column)) { String(column) }
 
 		rule(:identifier => simple(:identifier), :op => simple(:op), :expression => subtree(:expression)) { "\nFilter: #{identifier} #{op} #{expression}" }
 		rule(:is_null => { :identifier => simple(:identifier) }) { "\nFilter: #{identifier}" }
@@ -59,14 +59,14 @@ module Nagix
 
 		rule(:table => simple(:table),
 		     :columns => sequence(:columns),
-		     :conditions => subtree(:conditions)) { "GET #{table}\nColumns: #{columns.join(' ')}#{conditions}" }
+		     :conditions => subtree(:conditions)) { "GET #{table}\nResponseHeader: fixed16\nColumns: #{columns.join(' ')}\nColumnHeaders: on#{conditions}\n" }
 		rule(:table => simple(:table),
 		     :columns => { :all => simple(:all) },
-		     :conditions => subtree(:conditions)) { "GET #{table}#{conditions}" }
+		     :conditions => subtree(:conditions)) { "GET #{table}\nResponseHeader: fixed16#{conditions}\n" }
 		rule(:table => simple(:table),
-		     :columns => sequence(:columns)) { "GET #{table}\nColumns: #{columns.join(' ')}"  }
+		     :columns => sequence(:columns)) { "GET #{table}\nResponseHeader: fixed16\nColumns: #{columns.join(' ')}\nColumnHeaders: on\n"  }
 		rule(:table => simple(:table),
-		     :columns => { :all => simple(:all) }) { "GET #{table}" }
+		     :columns => { :all => simple(:all) }) { "GET #{table}\nResponseHeader: fixed16\n" }
 
     rule(:query => subtree(:query)) { String(query) }
 	end

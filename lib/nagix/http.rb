@@ -85,7 +85,7 @@ module Nagix
     end
 
     get '/hosts/?' do
-      @hosts = @lql.query("SELECT host_name name FROM hosts")
+      @hosts = @lql.query("SELECT host_name, name FROM hosts")
       respond_to do |wants|
         wants.html { @hosts.nil? ? not_found : haml(:hosts) }
         wants.json { @hosts.to_json }
