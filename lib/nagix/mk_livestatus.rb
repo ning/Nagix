@@ -38,13 +38,14 @@ module Nagix
     end
 
     def query(nql_query)
+      @log.debug "NQL QUERY: \n#{nql_query}\n"
       @lqlsocket = MKLivestatus.connect(@lqlpath) if @lqlsocket.nil?
 
       result = []
 
       query = @nql_parser.parse(nql_query) + "\n"
 
-      @log.debug "QUERY: \n#{query}"
+      @log.debug "QUERY: \n#{query}\n"
 
       begin
         @lqlsocket.puts(query)
@@ -78,6 +79,7 @@ module Nagix
     end
 
     def xcmd(napixcmd)
+      @log.debug "COMMAND:\n#{napixcmd}\n"
       @lqlsocket = MKLivestatus.connect(@lqlpath) if @lqlsocket == nil
       command = "COMMAND [#{Time.now.to_i}] #{napixcmd}\n\n"
       @lqlsocket.puts(command)

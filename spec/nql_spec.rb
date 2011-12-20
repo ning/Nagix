@@ -139,4 +139,11 @@ describe Nagix::NQL do
 	    query.should eq("GET x\nResponseHeader: fixed16\nFilter: a\n")
 	  end
 	end
+
+	describe "SELECT a FROM x WHERE a = 'foo' OR b = 'foo' OR c = 'foo'" do
+	  it "creates a GET query for the column a from x where a = 'foo' or b = 'foo' or c = 'foo'" do
+      query = nql.parse("SELECT a FROM x WHERE a = 'foo' OR b = 'foo' OR c = 'foo'")
+	    query.should eq("GET x\nResponseHeader: fixed16\nColumns: a\nColumnHeaders: on\nFilter: a = foo\nFilter: b = foo\nFilter: c = foo\nOr: 2\nOr: 2\n")
+	  end
+	end
 end
