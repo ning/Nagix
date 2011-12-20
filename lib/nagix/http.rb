@@ -115,7 +115,7 @@ module Nagix
       end
     end
 
-    get %r{/hosts/([a-zA-Z0-9\.]+)/([a-zA-Z0-9\.\/:_-]+)/attributes} do |host_name,service_description|
+    get %r{/hosts/([a-zA-Z0-9\.]+)/([a-zA-Z0-9\.\/:_-]+)/attributes} do |host_name, service_description|
       h = @lql.query("SELECT name FROM hosts WHERE host_name = '#{host_name}' OR alias = '#{host_name}' OR address = '#{host_name}'")
       @hosts = @lql.query("SELECT * FROM services WHERE host_name = '#{h[0]['name']}' AND description = '#{service_description}'")
       respond_to do |wants|
@@ -124,7 +124,7 @@ module Nagix
       end
     end
 
-    get %r{/hosts/([a-zA-Z0-9\.]+)/([a-zA-Z0-9\.\/:_-]+)/command/([A-Z_]+)} do |host_name,service_description,napixcmd|
+    get %r{/hosts/([a-zA-Z0-9\.]+)/([a-zA-Z0-9\.\/:_-]+)/command/([A-Z_]+)} do |host_name, service_description, napixcmd|
       @host_name = host_name
       @service_description = service_description
       @napixcmd = napixcmd
@@ -133,15 +133,26 @@ module Nagix
 #      NagiosXcmd.docurl(napixcmd) ? redirect("#{NagiosXcmd.docurl(napixcmd)}",307) : halt(404, "Nagios External Command #{napixcmd} Not Found")
     end
 
-    post %r{/hosts/([a-zA-Z0-9\.]+)/([a-zA-Z0-9\.\/:_-]+)/command/([A-Z_]+)} do |host_name,service_description,napixcmd|
-
-    end
-
-    put %r{/hosts/([a-zA-Z0-9\.]+)/([a-zA-Z0-9\.\/:_-]+)/command/([A-Z_]+)} do |host_name,service_description,napixcmd|
+    put %r{/hosts/([a-zA-Z0-9\.]+)/([a-zA-Z0-9\.\/:_-]+)/command/([A-Z_]+)} do |host_name, service_description, napixcmd|
       begin
         napixcmd_params = JSON.parse(request.body.read)
         napixcmd_params[:host_name] = host_name
         napixcmd_params[:service_description] = service_description
+      rescue JSON::ParserError
+        halt 400, "JSON parse error\n"
+      end
+      begin
+        cmd = NagiosXcmd.new(napixcmd,napixcmd_params)
+      rescue NagiosXcmd::Error => e
+        halt 400, e.message
+      end
+      @lql.xcmd(cmd)
+    end
+
+    put %r{/hosts/([a-zA-Z0-9\.]+)/command/([A-Z_]+)} do |host_name, napixcmd|
+      begin
+        napixcmd_params = JSON.parse(request.body.read)
+        napixcmd_params[:host_name] = host_name
       rescue JSON::ParserError
         halt 400, "JSON parse error\n"
       end
