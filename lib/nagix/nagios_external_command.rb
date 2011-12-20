@@ -5,6 +5,8 @@ module Nagix
     NAGIOSXCMDS = {
       :DISABLE_NOTIFICATIONS =>                     { :signature => "", :command_id => 7 },
       :ENABLE_NOTIFICATIONS =>                      { :signature => "", :command_id => 8 },
+      :DISABLE_HOST_SVC_NOTIFICATIONS =>            { :signature => "host_name", :command_id => 36 },
+      :ENABLE_HOST_SVC_NOTIFICATIONS =>             { :signature => "host_name", :command_id => 35 },
       :DISABLE_SVC_NOTIFICATIONS =>                 { :signature => "host_name;service_description", :command_id => 12 },
       :ENABLE_SVC_NOTIFICATIONS =>                  { :signature => "host_name;service_description", :command_id => 11 },
       :DISABLE_SERVICEGROUP_HOST_NOTIFICATIONS =>   { :signature => "servicegroup", :command_id => 94 },
@@ -36,6 +38,9 @@ module Nagix
       end
     end
 
+    def to_s
+      @cmd
+    end
   end
 end
 
