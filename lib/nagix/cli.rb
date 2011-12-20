@@ -157,7 +157,7 @@ module Nagix
         @lql = Nagix::MKLivestatus.new(:socket => settings.mklivestatus_socket,
                                        :log_file => settings.mklivestatus_log_file,
                                        :log_level => settings.mklivestatus_log_level)
-        @lql.find(:status, :column => "nagios_pid")
+        @lql.query("SELECT nagios_pid FROM status")
       end
 
       def reap
@@ -180,9 +180,9 @@ module Nagix
       end
 
       def find(argument)
-        MKLivestatus.find(:hosts,'host_name','host_name')
-        MKLivestatus.find(:services,'service_description','service_description')
-        MKLivestatus.find(:servicegroups,'name','name')
+        MKLivestatus.query("SELECT host_name FROM hosts")
+        MKLivestatus.query("SELECT service_description FROM services")
+        MKLivestatus.query("SELECT name FROM servicegroups")
       end
   end
 end

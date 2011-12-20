@@ -12,8 +12,9 @@ module Nagix
     class LQLError < Error; end
 
     def initialize(params)
-      # need to create the logger first so it initializes the log levels
       @lqlpath = params[:socket]
+      @nql_parser = NQL.new
+      # need to create the logger first so it initializes the log levels
       @log = Log4r::Logger.new('lql')
       log_file = params[:log_file] || "nagix.lql.log"
       log_level = Log4r.const_get(params[:log_level] || "WARN")
@@ -36,53 +37,34 @@ module Nagix
       @lqlsocket.close if @lqlsocket.nil?
     end
 
-    def find(table,lqlargs)
-
+    def query(nql_query)
+      @log.debug "NQL QUERY: \n#{nql_query}\n"
       @lqlsocket = MKLivestatus.connect(@lqlpath) if @lqlsocket.nil?
 
       result = []
-      result__ = []
 
-      query = "GET #{table.to_s}\nResponseHeader: fixed16\n"
+      query = @nql_parser.parse(nql_query) + "\n"
 
-      filter = ""
-      if lqlargs[:filter].nil? then
-        filter = nil
-      else
-        lqlargs[:filter].each do |f|
-          f.match(/^Or:|And:/) ? filter += "#{f}\n" : filter += "Filter: #{f}\n"
-        end
-        filter = nil if filter.size == 0
-      end
-
-      @log.debug "FILTER: \n#{filter}"
-      query += "#{filter}" unless filter.nil?
-
-      column = lqlargs[:column]
-      @log.debug "COLUMN: \n#{column}"
-      query += "Columns: #{column}\nColumnHeaders: on\n" unless column.nil?
-      query += "\n"
-
-      @log.debug "QUERY: \n#{query}"
+      @log.debug "QUERY: \n#{query}\n"
 
       begin
         @lqlsocket.puts(query)
         query_result = @lqlsocket.readlines
-        @log.debug "QUERY RESULT:\n#{query_result}\n"
+        if query_result
+          @log.debug "QUERY RESULT:\n#{query_result}\n"
 
-        __header = query_result.shift.chomp
-        __columns = query_result.shift.chomp.split(';')
+          __header = query_result.shift.chomp
+          __columns = query_result.shift.chomp.split(';')
 
-        query_result.each do |line|
-          hsh = {}
-          columns = Array.new(__columns)
-          values = line.chomp.split(';')
-          columns.zip(values) { |k,v| hsh[k] = v }
-          if table == :hosts then
-            @log.debug "#{hsh.class()} #{hsh.inspect()}"
-            result__.push(NagiosObject::Host.new(hsh['name'],hsh))
+          query_result.each do |line|
+            hsh = {}
+            columns = Array.new(__columns)
+            values = line.chomp.split(';')
+            columns.zip(values) { |k,v| hsh[k] = v }
+            result.push(hsh)
           end
-          result.push(hsh)
+        else
+          @log.debug "NO RESULT\n"
         end
       rescue
         result = nil
@@ -97,6 +79,7 @@ module Nagix
     end
 
     def xcmd(napixcmd)
+      @log.debug "COMMAND:\n#{napixcmd}\n"
       @lqlsocket = MKLivestatus.connect(@lqlpath) if @lqlsocket == nil
       command = "COMMAND [#{Time.now.to_i}] #{napixcmd}\n\n"
       @lqlsocket.puts(command)
