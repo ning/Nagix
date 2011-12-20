@@ -36,6 +36,9 @@ module Nagix
       end
     end
 
+    def to_s
+      @cmd
+    end
   end
 end
 
